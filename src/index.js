@@ -1,8 +1,14 @@
 import axios from 'axios';
 import Permission from './Permission';
 /**
+ *@namespace Static
+ */
+
+/**
  * A static function attached to an Entity derived class which provides browsing functionality of the BREAD construct.
  * This function must be bounded with an Entity derived class, that this function will be used on.
+ * @memberof Static
+ * @static 
  * @this - The Entity subclass.
  * @param {number} [limit] - The number of record to fetch, this will be added as a url query.
  * @return {Artifact | null} - The artifact of this action, or null on failure. 
