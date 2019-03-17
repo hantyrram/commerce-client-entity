@@ -1,3 +1,0 @@
-make entityName of EntityForm and EntityBrowser passed as props to Bread.
-
-try to work on Entity Classes

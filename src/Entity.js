@@ -17,8 +17,7 @@ import ArtifactEmitter from "./ArtifactEmitter";
  */
 
 /**
- * Represents the base class of all entities. This class must be extended and not to be instantiated directly.
- * 
+ * @classdesc Represents the base class of all entities. This class must be extended and not to be instantiated directly.
  * 
  * @constructor
  * @param {?object} object - If present initializes the entity with this object.
@@ -35,7 +34,6 @@ class Entity extends ArtifactEmitter{
   * the path to the post request.
   * If instance has no _id, then this method will add the entity. If _id is present it will send an UPDATE 
   * request.
-  * @instance
   */
  async save(){
   let artifact;
@@ -63,7 +61,7 @@ class Entity extends ArtifactEmitter{
     if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
       this.emit(artifact);
-      return true;
+      return this;
     }
     this.emit(artifact);
     return false;
@@ -77,12 +75,13 @@ class Entity extends ArtifactEmitter{
  async delete(){
   let artifact;
   try {
-   artifact = await this.constructor.delete(this);
+   let response = await axios.delete(this.deletePath,this);
+   artifact = response.data;
    if(artifact.status === 'ok'){
      Object.getOwnPropertyNames(this).forEach(p=>{
        delete this[p];
      });
-     return true;
+     return this;
    }
    this.emit(artifact);
    return false;

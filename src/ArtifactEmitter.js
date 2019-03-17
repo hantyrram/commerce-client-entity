@@ -1,8 +1,25 @@
+
+/**
+ * Function returned by @see {ArtifactEmitter#on} that can be used to unsubsribe to an action.
+ * 
+ * @typedef {function} ArtifactEmitter~unsubscribe
+ * 
+ */
+
+/**
+ * Emits artifacts, based on the subscribed action.
+ */
 class ArtifactEmitter{
  constructor(){
   this.subscribers = [];
  }
 
+ /**
+  * Emits an Artifact that was produced by an action.
+  * 
+  * @param {string} action - The name of the action.
+  * @param {Object} artifact - The Artifact that will be sent to the subscriber of the action.
+  */
  emit(action,artifact){
   for(let i in this.subscribers){
    if(this.subscribers[i].action === action){
@@ -11,6 +28,11 @@ class ArtifactEmitter{
   }
  }
 
+ /**
+  * @param {string} action - The action to subscribe to.
+  * @param {function} callback - The listener.
+  * @return {ArtifactEmitter~unsubscribe} - The function that can be used to unsubscribe.
+  */
  on(action,callback){
   let index = this.subscribers.push({action:action,subscriber:callback}) - 1;
   let unsubscribe = (i)=>{
@@ -19,14 +41,10 @@ class ArtifactEmitter{
   return unsubscribe.bind({},index);
   }
  } 
-/**
- * Used to provide features with capability to emit actions, and other components to subscribe to these
- * actions.
- * 
- * 
- */
 
 export default ArtifactEmitter;
+
+//artifact
 
 
  

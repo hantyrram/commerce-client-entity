@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './axios';
 import Entity from './Entity';
 
 /**
@@ -14,4 +14,6 @@ Permission.browse = async () => await axios.get(`/apiv1/permissions/browse`);
 Permission.apiVersion 
  = breadActionName => 
   Permission.breadApiVersions && Permission.breadApiVersions.length > 0? Permission.breadApiVersions[breadActionName] :'apiv1';
+
+  
 export default Permission;
