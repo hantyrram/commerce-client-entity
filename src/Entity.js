@@ -3,12 +3,15 @@ import axios from './axios';
 import ArtifactEmitter from "./ArtifactEmitter";
 
 /**
- * A static function that an Entity subclass MUST implement. This function must return the api version of the path.
+ * A function that returns the api version of the BREAD action. Entity Child classes MUST implement this function as static
+ * function.
  * 
- * @typedef {function} Entity~apiVersion 
- * @param {string} [actionName] - One of the BREAD verbs e.g. add will return the apiversion of the add path. 
- * @return {string} - The api version of the particular actionName, or a default api version if not specified.
+ * @typedef {function} Entity~apiVersion
+ * @param {string} [action] - The BREAD action e.g. "add" 
+ * @return {string} - The api version that'll be used as url prefix. Example, if action = "add" returned value will be used
+ * as prefix for the add action url, e.g. /apiv1/<add path>
  */
+
 
  /**
  * A static string that an Entity subclass may provide. This string is used by Entity as path when saving the entity.
@@ -39,7 +42,7 @@ class Entity extends ArtifactEmitter{
   let artifact;
   if(!this._id){
    try {
-     let response = await axios.post(this.editPath,this);
+     let response = await axios.post(this.addPath,this);
      let artifact = response.data;
      if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
@@ -56,7 +59,7 @@ class Entity extends ArtifactEmitter{
   }
 
   try {
-   let response = await axios.post(this.addPath,this);
+   let response = await axios.post(this.editPath,this);
    let artifact = response.data;
     if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
@@ -78,10 +81,11 @@ class Entity extends ArtifactEmitter{
    let response = await axios.delete(this.deletePath,this);
    artifact = response.data;
    if(artifact.status === 'ok'){
+     let id = this._id;
      Object.getOwnPropertyNames(this).forEach(p=>{
        delete this[p];
      });
-     return this;
+     return id;
    }
    this.emit(artifact);
    return false;
@@ -119,6 +123,8 @@ class Entity extends ArtifactEmitter{
   return path;
  }
 }
+
+
 
 Object.defineProperty(Entity.prototype,'save',{writable:false,configurable:false});
 Object.defineProperty(Entity.prototype,'delete',{writable:false,configurable:false});
