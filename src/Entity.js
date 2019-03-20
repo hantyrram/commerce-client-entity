@@ -1,6 +1,7 @@
 import pluralize from 'pluralize';
 import axios from './axios';
-import ArtifactEmitter from "./ArtifactEmitter";
+import apis from './apis';
+import {emit,subscribe} from "./artifactEmitter";
 
 /**
  * A function that returns the api version of the BREAD action. Entity Child classes MUST implement this function as static
@@ -25,9 +26,8 @@ import ArtifactEmitter from "./ArtifactEmitter";
  * @constructor
  * @param {?object} object - If present initializes the entity with this object.
  */
-class Entity extends ArtifactEmitter{
+class Entity{
  constructor(object){
-  super();
   if(object && typeof object !== 'object') throw new Error(`@Entity : ${object} is not of type object `);
   Object.assign(this,object);
  }
@@ -39,34 +39,31 @@ class Entity extends ArtifactEmitter{
   * request.
   */
  async save(){
-  let artifact;
   if(!this._id){
    try {
-     let response = await axios.post(this.addPath,this);
-     let artifact = response.data;
+     let response = await axios.post(apis(this.addActionName()),this);
+     let artifact = response.data.data;
      if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
-      this.emit(artifact);
+      emit(this.addActionName(),artifact);
       return this;
      }
-      this.emit(artifact);
       return false;
    } catch (error) {
       console.log(error);
-     this.emit(artifact);
      return false;
    }
   }
 
   try {
-   let response = await axios.post(this.editPath,this);
+   let response = await axios.post(apis(this.updateActionName()),this);
    let artifact = response.data;
     if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
-      this.emit(artifact);
+      emit(this.updateActionName(),artifact);
       return this;
     }
-    this.emit(artifact);
+    emit(artifact);
     return false;
   } catch (error) {
     console.log(error);
@@ -78,7 +75,7 @@ class Entity extends ArtifactEmitter{
  async delete(){
   let artifact;
   try {
-   let response = await axios.delete(this.deletePath,this);
+   let response = await axios.delete(this.deleteActionName(),this);
    artifact = response.data;
    if(artifact.status === 'ok'){
      let id = this._id;
@@ -87,7 +84,7 @@ class Entity extends ArtifactEmitter{
      });
      return id;
    }
-   this.emit(artifact);
+   emit(artifact);
    return false;
   } catch (error) {
    console.log(error);
@@ -96,32 +93,53 @@ class Entity extends ArtifactEmitter{
  }
 
  /**
-  * Constructs the default api url to be used when updating the entity. The generated url is comprised of, 1. the static 
-  * apiVersion 2. The pluralize name of the childclass and in lowercase form. 3. The _id of the entity as a url parameter
-  * 4. The suffix "edit".
-  * 
-  * To use a different editPath, the child class must override this getter.
-  * @return {string} - The apis path to use when updating the entity.
+  * Proxy to emitter so that subclasses can emit artifacts.
+  * @param {string} action - The action name.
+  * @param {Object} artifact - The artifact.
   */
- get editPath(){
-  let apiVersion = this.constructor.apiVersion("edit");
-  let path = `/${apiVersion}/${pluralize(this.constructor.name.toLowerCase())}/${this._id}/edit`;
-  return path;
+ emit(action,artifact){
+  emit(action,artifact);
  }
 
  /**
-  * Constructs the default api url to be used when adding an entity. The generated url is comprised of, 1. the static 
-  * apiVersion 2. The pluralize name of the childclass and in lowercase form.
-  * 
-  * To use a different addPath, the child class must override this getter.
-  * 
-  * @return {string} - The apis path to use when adding the entity.
+  * Proxy to emitter subscriber so that subclasses can be used to subscribed to action events.
+  * @param {string} action - The action name.
+  * @param {function} callback - The listener.
+  * @return {function} ArtifactEmitter~unsubscribe.
   */
- get addPath(){
-  let apiVersion = this.constructor.apiVersion("add");
-  let path = `/${apiVersion}/${pluralize(this.constructor.name.toLowerCase())}`;
-  return path;
+ subscribe(action,callback){
+  return subscribe(action,callback);
  }
+
+ /**
+  * 
+  * @abstract
+  * @return {string} - The specific name of the add action. E.g. 'user_add'
+  */
+ addActionName(){
+  throw new Error('Add action name required!');
+ }
+
+  /**
+  * 
+  * @abstract
+  * @return {string} - The specific name of the add action. E.g. 'user_add'
+  */
+ updateActionName(){
+  throw new Error('Edit action name required!');
+ }
+
+  /**
+  * 
+  * @abstract
+  * @return {string} - The specific name of the add action. E.g. 'user_add'
+  */
+ deleteActionName(){
+  throw new Error('Delete action name required!');
+ }
+
+
+
 }
 
 
