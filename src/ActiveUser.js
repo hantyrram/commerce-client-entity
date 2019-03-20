@@ -24,12 +24,10 @@ class ActiveUser extends User{
  async login(){
   const action = 'login';
   try {
-   console.log(apis(action));
    let response = await axios.post(apis(action),this);
-   console.log(response);
-   let artifact = response.data.data;
+   let artifact = response.data;
    if(artifact.status === 'ok'){
-    let user = artifact.entity;
+    let user = artifact.data.entity;
     this._id = user._id;
     this.username = user.username;
     this.emit(action,response);
@@ -42,13 +40,10 @@ class ActiveUser extends User{
  async logout(){
   const action = 'logout';
   try {
-   let response = axios.post(apis('logout'),this);
-   let artifact = response.data.data;
+   let response = await axios.get(apis('logout'));
+   let artifact = response.data;
    if(artifact.status === 'ok'){
-    let user = artifact.entity;
-    this._id = user._id;
-    this.username = user.username;
-    this.emit(action,response);
+    this.emit(action,artifact);
    }
   } catch (error) {
    console.log(error);
