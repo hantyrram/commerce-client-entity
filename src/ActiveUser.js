@@ -30,7 +30,7 @@ class ActiveUser extends User{
     let user = artifact.data.entity;
     this._id = user._id;
     this.username = user.username;
-    this.emit(action,response);
+    this.emit(action,artifact);
    }
   } catch (error) {
    console.log(error);

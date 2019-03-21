@@ -41,11 +41,11 @@ class Entity{
  async save(){
   if(!this._id){
    try {
-     let response = await axios.post(apis(this.addActionName()),this);
+     let response = await axios.post(apis(this.createActionName()),this);
      let artifact = response.data.data;
      if(artifact.status === 'ok'){
       Object.assign(this,artifact.data.entity);
-      emit(this.addActionName(),artifact);
+      emit(this.createActionName(),artifact);
       return this;
      }
       return false;
@@ -116,8 +116,8 @@ class Entity{
   * @abstract
   * @return {string} - The specific name of the add action. E.g. 'user_add'
   */
- addActionName(){
-  throw new Error('Add action name required!');
+ createActionName(){
+  throw new Error('Create action name required!');
  }
 
   /**

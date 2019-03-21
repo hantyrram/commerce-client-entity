@@ -5,7 +5,7 @@ import Entity from './Entity';
  * @extends Entity
  */
 class Permission extends Entity{
- addActionName(){
+ createActionName(){
   return 'permission_create';
  }
  updateActionName(){

@@ -14,7 +14,9 @@ export default (action,params) =>{
   //where params[0] = user._id
   case 'user_roles_add' : return `/${API_VERSION}/users/${params[0]}/roles/add`;
   case 'user_roles_delete' : return `/${API_VERSION}/users/${params[0]}/roles/delete`;
-  case 'permission_browse' : return `/${API_VERSION}/permissions`;
+  case 'permission_create' : return `/${API_VERSION}/permissions`;
+  case 'permission_update' : return `/${API_VERSION}/permissions/${params[0]}/edit`;
+  case 'permission_delete' : return `/${API_VERSION}/permissions/${params[0]}/delete`;
   default : return null;
  }
 }

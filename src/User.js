@@ -35,7 +35,7 @@ class User extends Entity{
  /**
   * @override 
   */
- addActionName(){
+ createActionName(){
   return 'user_add';
  }
 

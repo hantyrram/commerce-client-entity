@@ -4,24 +4,15 @@ import { subscribe } from './artifactEmitter';
 
 // jest.mock('./axios');
 
-// it('It can login a user',async done =>{
-//  let u = subscribe('login',(response)=>{
-//   console.dir(response);
-//   u();
-//  });
-//  let user = new ActiveUser({username:'genesis',password:'genesis'});
-//  try {
-//   await user.login();
-//   expect(user._id);
-//   done();
-//  } catch (error) {
-//   console.log(error);
-//  }
- 
-// });
-
-it('It can logout a user',async done =>{
+it.skip('It can login and logout a user',async done =>{
+ subscribe('login',(artifact)=>{
+  console.log('Logging in');
+  console.log(artifact);
+  expect(artifact.status).toBe('ok');
+  done();
+ });
  subscribe('logout',(artifact)=>{
+  console.log('Logging Out');
   console.log(artifact);  
   expect(artifact.status).toBe('ok');
   done();
@@ -30,6 +21,7 @@ it('It can logout a user',async done =>{
  try {
   await user.login();
   await user.logout();
+  done();
  } catch (error) {
   console.log(error);
  }
